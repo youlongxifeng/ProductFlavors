@@ -1,0 +1,134 @@
+apply plugin: 'com.android.application'
+//定义打包时间函数
+def packageTime() {
+    return new Date().format("yyyy-MM-dd", TimeZone.getTimeZone("UTC"))
+}
+android {
+    signingConfigs {
+       /* config {
+            keyAlias 'abcdefg123456'
+            keyPassword 'abcdefg'
+            storeFile file('../keystore/you')
+            storePassword 'abcdefg'
+        }
+        debug {
+            keyAlias 'abcdefg123456'
+            keyPassword 'abcdefg'
+            storeFile file('../keystore/you')
+            storePassword 'abcdefg'
+        }*/
+        release {
+            keyAlias 'abcdefg123456'
+            keyPassword 'abcdefg'
+            storeFile file('../keystore/you')
+            storePassword 'abcdefg'
+        }
+    }
+    compileSdkVersion 26
+    defaultConfig {
+        applicationId "com.youlong.productflavors.project"
+        minSdkVersion mVminSdkVersion
+        targetSdkVersion mVtargetSdkVersion
+        versionCode mVversionCode
+        versionName mVversionName
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+    buildTypes {
+        debug {
+            minifyEnabled false//混淆编译
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
+
+        }
+        release {
+            minifyEnabled false//混淆编译
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+
+        }
+    }
+    productFlavors {
+        //项目1
+        product1 {
+            buildConfigField "int", "SERVER_VALUE", "1"
+            buildConfigField("String", "DATA_NETWORK_SOURCES", '"product1"')
+            applicationId "com.youlong.productflavors.project"//修改了包名
+            minSdkVersion mVminSdkVersion
+            targetSdkVersion mVtargetSdkVersion
+            versionCode mVversionCode
+            versionName mVversionName
+            manifestPlaceholders = [APP_ICON   : "@mipmap/ic_launcher",
+                                    APP_NAME   : "项目1",
+                                    APP_PACKAGE: "com.youlong.productflavors.project.demo1"]
+        }
+        //项目2
+        product2 {
+            buildConfigField "int", "SERVER_VALUE", "2"
+            buildConfigField("String", "DATA_NETWORK_SOURCES", '"product2"')
+            applicationId "com.youlong.productflavors.project"//修改了包名
+            /* minSdkVersion compile_sdk_version
+             targetSdkVersion target_sdk_version
+             versionCode version_code
+             versionName version_name*/
+            minSdkVersion mVminSdkVersion
+            targetSdkVersion mVtargetSdkVersion
+            versionCode mVversionCode
+            versionName mVversionName
+            manifestPlaceholders = [APP_ICON   : "@mipmap/ic_launcher",
+                                    APP_NAME   : "项目2",
+                                    APP_PACKAGE: "com.youlong.productflavors.project.demo2"
+            ]
+        }
+        /**
+         * 3.选择构建变体
+
+         菜单->Build->Select Build Variant
+         这时候左下会出现一个窗口，如果Select Build Variant无法选中的话，请先选择app目录。
+         */
+    }
+    sourceSets {
+        flavorsdemo1 {
+            java.srcDirs = ['src/main/java', 'src/product1/java', 'src/product1/project1_res']
+        }
+
+        flavorsdemo2 {
+            java.srcDirs = ['src/main/java', 'src/product2/java', 'src/product2/project2_res']
+        }
+
+
+    }
+
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    //修改生成的最终文件名
+    android.applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "driver_${variant.productFlavors[0].name}_v${packageTime()}_${variant.versionName}.apk"
+        }
+    }
+
+
+    repositories {
+        flatDir {
+            dirs 'libs'
+        }
+    }
+    flavorDimensions "versionCode"//版本名后面添加一句话，意思就是flavor dimension 它的维度就是该版本号，这样维度就是都是统一的了
+
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.1'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+
+}
