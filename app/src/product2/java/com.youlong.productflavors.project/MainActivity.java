@@ -15,5 +15,7 @@ public class MainActivity extends AppCompatActivity {
         String str = Constant.API_ADDRESS;
         TextView textView = findViewById(R.id.text_title);
         textView.setText(str);
+
+
     }
 }
